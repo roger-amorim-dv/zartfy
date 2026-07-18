@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { DM_Sans, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import "./language.css";
+import "./mockup/upload.css";
 import { ArtStore } from "@/components/art-store";
 import { LanguageProvider } from "@/components/language-provider";
 const sans=DM_Sans({subsets:["latin"],variable:"--sans"}); const display=Playfair_Display({subsets:["latin"],variable:"--display"});
