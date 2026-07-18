@@ -18,3 +18,4 @@
 .room-fit-options button.active { background: #171512; color: #fff; }
 .room-sizing-controls label { display: grid; grid-template-columns: 1fr auto; font-size: 9px; font-weight: 700; }
 .room-sizing-controls input { grid-column: 1 / -1; width: 100%; accent-color: #ff6f52; }
+.mockup-bottom button:disabled { opacity: .65; cursor: wait; }

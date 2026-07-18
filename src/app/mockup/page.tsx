@@ -35,7 +35,9 @@ export default function Mockup() {
   const [position, setPosition] = useState({ x: 50, y: 40 });
   const [drag, setDrag] = useState<{ x: number; y: number } | null>(null);
   const [error, setError] = useState("");
+  const [exporting, setExporting] = useState(false);
   const stageRef = useRef<HTMLDivElement>(null);
+  const placedArtRef = useRef<HTMLDivElement>(null);
   const roomInputRef = useRef<HTMLInputElement>(null);
   const artworkInputRef = useRef<HTMLInputElement>(null);
   const objectUrls = useRef<string[]>([]);
@@ -98,6 +100,67 @@ export default function Mockup() {
     setDrag({ x: event.clientX, y: event.clientY });
   };
 
+  const loadCanvasImage = (source: string) => new Promise<HTMLImageElement>((resolve, reject) => {
+    const image = new Image();
+    if (!source.startsWith("blob:") && !source.startsWith("data:")) image.crossOrigin = "anonymous";
+    image.onload = () => resolve(image);
+    image.onerror = () => reject(new Error("One of the preview images could not be exported."));
+    image.src = source;
+  });
+
+  const savePreview = async () => {
+    if (!selected || !stageRef.current || !placedArtRef.current) return;
+    try {
+      setError("");
+      setExporting(true);
+      const [roomImage, artworkImage] = await Promise.all([loadCanvasImage(room), loadCanvasImage(selected.image)]);
+      const stageRect = stageRef.current.getBoundingClientRect();
+      const artworkRect = placedArtRef.current.getBoundingClientRect();
+      const outputScale = Math.min(3, Math.max(2, 1800 / stageRect.width));
+      const canvas = document.createElement("canvas");
+      canvas.width = Math.round(stageRect.width * outputScale);
+      canvas.height = Math.round(stageRect.height * outputScale);
+      const context = canvas.getContext("2d");
+      if (!context) throw new Error("Your browser could not create the preview.");
+
+      context.fillStyle = "#e6e1d8";
+      context.fillRect(0, 0, canvas.width, canvas.height);
+      const fitScale = roomFit === "contain"
+        ? Math.min(canvas.width / roomImage.naturalWidth, canvas.height / roomImage.naturalHeight)
+        : Math.max(canvas.width / roomImage.naturalWidth, canvas.height / roomImage.naturalHeight);
+      const roomScale = fitScale * (roomZoom / 100);
+      const roomWidth = roomImage.naturalWidth * roomScale;
+      const roomHeight = roomImage.naturalHeight * roomScale;
+      context.drawImage(roomImage, (canvas.width - roomWidth) / 2, (canvas.height - roomHeight) / 2, roomWidth, roomHeight);
+
+      const artX = (artworkRect.left - stageRect.left) * outputScale;
+      const artY = (artworkRect.top - stageRect.top) * outputScale;
+      const artWidth = artworkRect.width * outputScale;
+      const artHeight = artworkRect.height * outputScale;
+      const border = frame === "none" ? 0 : Math.max(7, artWidth * 0.025);
+      if (border) {
+        context.fillStyle = frame === "white" ? "#f8f4e9" : frame === "oak" ? "#b38355" : "#111111";
+        context.shadowColor = "rgba(0,0,0,.34)";
+        context.shadowBlur = artWidth * 0.05;
+        context.shadowOffsetY = artWidth * 0.025;
+        context.fillRect(artX, artY, artWidth, artHeight);
+        context.shadowColor = "transparent";
+      }
+      context.drawImage(artworkImage, artX + border, artY + border, artWidth - border * 2, artHeight - border * 2);
+
+      const link = document.createElement("a");
+      link.download = `zartfy-${selected.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "preview"}.jpg`;
+      link.href = canvas.toDataURL("image/jpeg", 0.94);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : "The preview could not be saved.");
+    } finally {
+      setExporting(false);
+    }
+  };
+
   return (
     <main>
       <SiteHeader />
@@ -151,9 +214,9 @@ export default function Mockup() {
           <div className="mockup-toolbar"><span>Live preview · {selected?.width} × {selected?.height} cm</span><button onClick={() => { setPosition({ x: 50, y: 40 }); setScale(30); }}><RotateCcw /> Reset</button></div>
           <div className="room-stage" ref={stageRef}>
             <img className={`room-photo ${roomFit}`} src={room} alt="Room preview" style={{ transform: `scale(${roomZoom / 100})` }} />
-            {selected && <div className={`placed-art ${frame}`} style={{ left: `${position.x}%`, top: `${position.y}%`, width: `${scale}%`, aspectRatio: `${selected.width}/${selected.height}` }} onPointerDown={(event) => { event.currentTarget.setPointerCapture(event.pointerId); setDrag({ x: event.clientX, y: event.clientY }); }} onPointerMove={moveArtwork} onPointerUp={() => setDrag(null)}><img src={selected.image} alt={selected.title} /><i><Move /> drag to position</i></div>}
+            {selected && <div ref={placedArtRef} className={`placed-art ${frame}`} style={{ left: `${position.x}%`, top: `${position.y}%`, width: `${scale}%`, aspectRatio: `${selected.width}/${selected.height}` }} onPointerDown={(event) => { event.currentTarget.setPointerCapture(event.pointerId); setDrag({ x: event.clientX, y: event.clientY }); }} onPointerMove={moveArtwork} onPointerUp={() => setDrag(null)}><img src={selected.image} alt={selected.title} /><i><Move /> drag to position</i></div>}
           </div>
-          <div className="mockup-bottom"><div><ImagePlus /><span>Previewing <strong>{selected?.title}</strong></span></div><button><Download /> Save preview</button></div>
+          <div className="mockup-bottom"><div><ImagePlus /><span>Previewing <strong>{selected?.title}</strong></span></div><button type="button" onClick={savePreview} disabled={exporting}><Download /> {exporting ? "Preparing preview..." : "Save preview"}</button></div>
         </div>
       </section>
     </main>
