@@ -19,3 +19,10 @@
 .room-sizing-controls label { display: grid; grid-template-columns: 1fr auto; font-size: 9px; font-weight: 700; }
 .room-sizing-controls input { grid-column: 1 / -1; width: 100%; accent-color: #ff6f52; }
 .mockup-bottom button:disabled { opacity: .65; cursor: wait; }
+.mockup-actions { display: flex; gap: 7px; }
+.mockup-bottom .save-mockup,.mockup-bottom .buy-mockup { padding: 12px 15px; color: #fff; }
+.mockup-bottom .save-mockup { background: #171512; }
+.mockup-bottom .buy-mockup { background: #238b57; }
+.mockup-bottom .buy-mockup:disabled { background: #a6a29a; cursor: not-allowed; }
+.mockup-buy-hint { margin: 0; padding: 8px 20px; background: #fff4d4; color: #776a44; text-align: right; font-size: 8px; }
+@media (max-width: 680px) { .mockup-bottom { height: auto; gap: 10px; align-items: flex-start; flex-direction: column; } .mockup-actions { width: 100%; } .mockup-actions button { flex: 1; } .mockup-buy-hint { text-align: left; } }

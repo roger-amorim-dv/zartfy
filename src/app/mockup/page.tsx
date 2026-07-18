@@ -2,10 +2,11 @@
 
 import { ChangeEvent, PointerEvent, useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, Check, Download, ImagePlus, Move, RotateCcw, Upload } from "lucide-react";
+import { ArrowLeft, Check, Download, ImagePlus, MessageCircle, Move, RotateCcw, Upload } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
 import { useArtStore } from "@/components/art-store";
 import type { Artwork } from "@/data/artworks";
+import { recordEvent } from "@/components/analytics";
 
 const demoRoom = "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1800&q=90";
 const MAX_FILE_SIZE = 20 * 1024 * 1024;
@@ -161,6 +162,30 @@ export default function Mockup() {
     }
   };
 
+  const buyViaWhatsApp = () => {
+    if (!selected || !roomName) return;
+    const frameLabels: Record<string, string> = { none: "Sem moldura", black: "Moldura preta", white: "Moldura branca", oak: "Moldura carvalho" };
+    const roomFitLabels = { contain: "Foto inteira", cover: "Preencher visualização" };
+    const price = selected.price > 0 ? new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(selected.price) : "A combinar";
+    const message = [
+      "Olá! Montei uma composição no simulador da Zartfy e gostaria de comprar esta obra.",
+      "",
+      `*Obra:* ${selected.title}`,
+      `*Artista:* ${selected.artist}`,
+      `*Dimensões:* ${selected.width} × ${selected.height} cm`,
+      `*Acabamento:* ${frameLabels[frame]}`,
+      `*Preço:* ${price}`,
+      `*Escala escolhida:* ${scale}%`,
+      `*Ajuste da foto do ambiente:* ${roomFitLabels[roomFit]} · ${roomZoom}%`,
+      `*Foto do ambiente:* ${roomName}`,
+      selected.id.startsWith("custom-") ? "*Imagem:* Enviada pelo cliente" : `*Referência:* https://zartfy.com/#${selected.id}`,
+      "",
+      "Tenho a prévia salva e posso enviá-la nesta conversa. Poderiam confirmar os detalhes e o prazo?",
+    ].join("\n");
+    recordEvent("mockup_buy_whatsapp");
+    window.open(`https://api.whatsapp.com/send?phone=5519999077538&text=${encodeURIComponent(message)}&app_absent=0`, "_blank", "noopener,noreferrer");
+  };
+
   return (
     <main>
       <SiteHeader />
@@ -216,7 +241,8 @@ export default function Mockup() {
             <img className={`room-photo ${roomFit}`} src={room} alt="Room preview" style={{ transform: `scale(${roomZoom / 100})` }} />
             {selected && <div ref={placedArtRef} className={`placed-art ${frame}`} style={{ left: `${position.x}%`, top: `${position.y}%`, width: `${scale}%`, aspectRatio: `${selected.width}/${selected.height}` }} onPointerDown={(event) => { event.currentTarget.setPointerCapture(event.pointerId); setDrag({ x: event.clientX, y: event.clientY }); }} onPointerMove={moveArtwork} onPointerUp={() => setDrag(null)}><img src={selected.image} alt={selected.title} /><i><Move /> drag to position</i></div>}
           </div>
-          <div className="mockup-bottom"><div><ImagePlus /><span>Previewing <strong>{selected?.title}</strong></span></div><button type="button" onClick={savePreview} disabled={exporting}><Download /> {exporting ? "Preparing preview..." : "Save preview"}</button></div>
+          <div className="mockup-bottom"><div><ImagePlus /><span>Previewing <strong>{selected?.title}</strong></span></div><div className="mockup-actions"><button className="save-mockup" type="button" onClick={savePreview} disabled={exporting}><Download /> {exporting ? "Preparing preview..." : "Save preview"}</button><button className="buy-mockup" type="button" onClick={buyViaWhatsApp} disabled={!roomName}><MessageCircle /> Buy this composition</button></div></div>
+          {!roomName && <p className="mockup-buy-hint">Upload your room photo to unlock WhatsApp purchasing with all your selected details.</p>}
         </div>
       </section>
     </main>
