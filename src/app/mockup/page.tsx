@@ -28,6 +28,8 @@ export default function Mockup() {
   const [selected, setSelected] = useState<Artwork | undefined>(list[0]);
   const [room, setRoom] = useState(demoRoom);
   const [roomName, setRoomName] = useState("");
+  const [roomFit, setRoomFit] = useState<"contain" | "cover">("cover");
+  const [roomZoom, setRoomZoom] = useState(100);
   const [scale, setScale] = useState(30);
   const [frame, setFrame] = useState("black");
   const [position, setPosition] = useState({ x: 50, y: 40 });
@@ -50,6 +52,8 @@ export default function Mockup() {
       objectUrls.current.push(image.url);
       setRoom(image.url);
       setRoomName(file.name);
+      setRoomFit("contain");
+      setRoomZoom(100);
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : "This image could not be opened.");
     }
@@ -127,6 +131,13 @@ export default function Mockup() {
             {roomName ? <Check /> : <Upload />}
             <span>{roomName || "Upload a room photo"}<small>{roomName ? "Click to replace the image" : "JPG, PNG, WEBP or HEIC · up to 20 MB"}</small></span>
           </button>
+          {roomName && <div className="room-sizing-controls">
+            <div className="room-fit-options">
+              <button type="button" className={roomFit === "contain" ? "active" : ""} onClick={() => setRoomFit("contain")}>Show entire photo</button>
+              <button type="button" className={roomFit === "cover" ? "active" : ""} onClick={() => setRoomFit("cover")}>Fill preview</button>
+            </div>
+            <label>Room photo size <output>{roomZoom}%</output><input type="range" min="60" max="180" value={roomZoom} onChange={(event) => setRoomZoom(+event.target.value)} /></label>
+          </div>}
           {error && <p className="mockup-error">{error}</p>}
 
           <h2><span>03</span>Finish & scale</h2>
@@ -138,7 +149,8 @@ export default function Mockup() {
 
         <div className="mockup-preview">
           <div className="mockup-toolbar"><span>Live preview · {selected?.width} × {selected?.height} cm</span><button onClick={() => { setPosition({ x: 50, y: 40 }); setScale(30); }}><RotateCcw /> Reset</button></div>
-          <div className="room-stage" ref={stageRef} style={{ backgroundImage: `url(${room})` }}>
+          <div className="room-stage" ref={stageRef}>
+            <img className={`room-photo ${roomFit}`} src={room} alt="Room preview" style={{ transform: `scale(${roomZoom / 100})` }} />
             {selected && <div className={`placed-art ${frame}`} style={{ left: `${position.x}%`, top: `${position.y}%`, width: `${scale}%`, aspectRatio: `${selected.width}/${selected.height}` }} onPointerDown={(event) => { event.currentTarget.setPointerCapture(event.pointerId); setDrag({ x: event.clientX, y: event.clientY }); }} onPointerMove={moveArtwork} onPointerUp={() => setDrag(null)}><img src={selected.image} alt={selected.title} /><i><Move /> drag to position</i></div>}
           </div>
           <div className="mockup-bottom"><div><ImagePlus /><span>Previewing <strong>{selected?.title}</strong></span></div><button><Download /> Save preview</button></div>
