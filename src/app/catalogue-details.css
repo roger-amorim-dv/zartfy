@@ -1,0 +1,7 @@
+.art-description { min-height: 58px; margin: 12px 0; color: #6d675f; font-size: 11px; line-height: 1.65; }
+.art-card-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
+.art-card-actions > a:first-child { margin-top: 12px; min-height: 42px; border: 1px solid rgba(23,21,18,.2); display: flex; align-items: center; justify-content: center; gap: 7px; text-align: center; text-decoration: none; text-transform: uppercase; letter-spacing: .09em; font-size: 8px; font-weight: 700; }
+.art-card-actions > a:first-child svg { width: 14px; }
+.art-card-actions > a:first-child:hover { background: #171512; color: #fff; }
+.site-legal { min-height: 72px; background: #171512; color: #85817a; border-top: 1px solid #383531; padding: 0 6vw; display: flex; align-items: center; justify-content: space-between; font-size: 9px; }
+@media (max-width: 680px) { .art-card-actions { grid-template-columns: 1fr; } }

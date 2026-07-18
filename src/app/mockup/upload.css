@@ -9,6 +9,12 @@
 .room-upload { width: 100%; background: #fff; text-align: left; }
 .room-upload.uploaded { border-style: solid; border-color: #5c8b55; color: #31592d; }
 .mockup-error { margin: 8px 0 0; color: #b63827; font-size: 9px; line-height: 1.4; }
+.selected-artwork-details { margin-top: 12px; padding: 14px; background: #f7f4ed; border-left: 3px solid #ff6f52; }
+.selected-artwork-details .kicker { margin: 0 0 7px; color: #817b72; font-size: 7px; }
+.selected-artwork-details h3 { margin: 0 0 2px; font-family: var(--display), serif; font-size: 18px; }
+.selected-artwork-details>span { color: #777; font-size: 8px; }
+.selected-artwork-details>p:not(.kicker) { margin: 9px 0; color: #68625b; font-size: 8px; line-height: 1.5; }
+.selected-artwork-details>div { display: flex; justify-content: space-between; padding-top: 8px; border-top: 1px solid rgba(23,21,18,.14); font-size: 9px; }
 .room-photo { position: absolute; inset: 0; width: 100%; height: 100%; object-position: center; transform-origin: center; pointer-events: none; user-select: none; }
 .room-photo.contain { object-fit: contain; }
 .room-photo.cover { object-fit: cover; }

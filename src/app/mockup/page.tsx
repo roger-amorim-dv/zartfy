@@ -44,6 +44,12 @@ export default function Mockup() {
   const objectUrls = useRef<string[]>([]);
 
   useEffect(() => () => objectUrls.current.forEach((url) => URL.revokeObjectURL(url)), []);
+  useEffect(() => {
+    const artworkId = new URLSearchParams(window.location.search).get("art");
+    if (!artworkId) return;
+    const requestedArtwork = artworks.find((artwork) => artwork.id === artworkId && artwork.published);
+    if (requestedArtwork) setSelected(requestedArtwork);
+  }, [artworks]);
 
   const uploadRoom = async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -212,6 +218,7 @@ export default function Mockup() {
               </button>
             ))}
           </div>
+          {selected && <div className="selected-artwork-details"><p className="kicker">Selected artwork</p><h3>{selected.title}</h3><span>{selected.artist}, {selected.year}</span><p>{selected.description}</p><div><strong>{selected.width} × {selected.height} cm</strong><strong>{selected.price > 0 ? new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(selected.price) : "Price on request"}</strong></div></div>}
 
           <h2><span>02</span>Add your room</h2>
           <input ref={roomInputRef} className="visually-hidden-input" type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" onChange={uploadRoom} />
