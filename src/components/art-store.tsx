@@ -9,7 +9,7 @@ const KEY = "zartfy-artworks-v1";
 export function ArtStore({children}:{children:ReactNode}) {
   const [artworks,setArtworks] = useState(seedArtworks);
   const [ready,setReady] = useState(false);
-  useEffect(()=>{ try { const saved=localStorage.getItem(KEY); if(saved){const stored=JSON.parse(saved) as Artwork[];const missing=seedArtworks.filter(seed=>!stored.some(item=>item.id===seed.id));setArtworks([...stored,...missing]);} } finally { setReady(true); } },[]);
+  useEffect(()=>{ try { const saved=localStorage.getItem(KEY); if(saved){const stored=JSON.parse(saved) as Artwork[];const stableImages=new Map(seedArtworks.filter(seed=>seed.image.startsWith("/artworks/")).map(seed=>[seed.id,seed.image]));const migrated=stored.map(item=>stableImages.has(item.id)?{...item,image:stableImages.get(item.id)!}:item);const missing=seedArtworks.filter(seed=>!migrated.some(item=>item.id===seed.id));setArtworks([...migrated,...missing]);} } finally { setReady(true); } },[]);
   useEffect(()=>{ if(ready) localStorage.setItem(KEY,JSON.stringify(artworks)); },[artworks,ready]);
   const value=useMemo<Store>(()=>({ artworks,ready,save:(art)=>setArtworks(a=>a.some(x=>x.id===art.id)?a.map(x=>x.id===art.id?art:x):[art,...a]),remove:(id)=>setArtworks(a=>a.filter(x=>x.id!==id)),reset:()=>setArtworks(seedArtworks) }),[artworks,ready]);
   return <Context.Provider value={value}>{children}</Context.Provider>;
