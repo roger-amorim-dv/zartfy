@@ -1,0 +1,4 @@
+.whatsapp-buy { margin-top: 12px; min-height: 42px; border: 1px solid rgba(23,21,18,.2); display: flex; align-items: center; justify-content: center; gap: 8px; color: #171512; background: #fffdf8; text-decoration: none; text-transform: uppercase; letter-spacing: .1em; font-size: 8px; font-weight: 700; transition: .2s; }
+.whatsapp-buy svg { width: 15px; color: #238b57; }
+.whatsapp-buy:hover { background: #238b57; border-color: #238b57; color: #fff; }
+.whatsapp-buy:hover svg { color: #fff; }

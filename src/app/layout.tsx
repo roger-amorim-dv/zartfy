@@ -5,6 +5,7 @@ import "./language.css";
 import "./mockup/upload.css";
 import "./contact-analytics.css";
 import "./admin-link.css";
+import "./whatsapp.css";
 import { ArtStore } from "@/components/art-store";
 import { LanguageProvider } from "@/components/language-provider";
 import { AnalyticsTracker } from "@/components/analytics";
