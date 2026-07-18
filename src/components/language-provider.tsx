@@ -6,6 +6,7 @@ export type Language = "pt" | "en" | "es";
 
 const translations: Record<Exclude<Language, "en">, Record<string, string>> = {
   pt: {
+    "“We believe the art you live with should feel less like decoration—and more like a": "“Acreditamos que a arte com a qual você vive deve parecer menos decoração — e mais uma", "part of you.": "parte de você.",
     "Buy this composition": "Comprar esta composição", "Upload your room photo to unlock WhatsApp purchasing with all your selected details.": "Envie a foto do seu ambiente para liberar a compra pelo WhatsApp com todos os detalhes selecionados.",
     "Buy via WhatsApp": "Comprar pelo WhatsApp",
     "View analytics →": "Ver análises →",
@@ -39,6 +40,7 @@ const translations: Record<Exclude<Language, "en">, Record<string, string>> = {
     "Catalogue editor": "Editor de catálogo", "Edit artwork": "Editar obra", "Image URL": "URL da imagem", "Title": "Título", "Artist": "Artista", "Year": "Ano", "Price ($)": "Preço ($)", "Width (cm)": "Largura (cm)", "Height (cm)": "Altura (cm)", "Description": "Descrição", "Accent colour": "Cor de destaque", "Featured": "Destaque", "Cancel": "Cancelar", "Save artwork": "Salvar obra"
   },
   es: {
+    "“We believe the art you live with should feel less like decoration—and more like a":"“Creemos que el arte con el que vives debe sentirse menos como decoración y más como una","part of you.":"parte de ti.",
     "Buy this composition":"Comprar esta composición","Upload your room photo to unlock WhatsApp purchasing with all your selected details.":"Sube la foto de tu habitación para habilitar la compra por WhatsApp con todos los detalles seleccionados.",
     "Buy via WhatsApp":"Comprar por WhatsApp",
     "View analytics →":"Ver análisis →",
