@@ -192,6 +192,21 @@ export default function Mockup() {
     window.open(`https://api.whatsapp.com/send?phone=5519999077538&text=${encodeURIComponent(message)}&app_absent=0`, "_blank", "noopener,noreferrer");
   };
 
+  const resetMockup = () => {
+    const artworkId = new URLSearchParams(window.location.search).get("art");
+    const requestedArtwork = artworkId ? artworks.find((artwork) => artwork.id === artworkId && artwork.published) : undefined;
+    setSelected(requestedArtwork || list[0]);
+    setRoom(demoRoom);
+    setRoomName("");
+    setRoomFit("cover");
+    setRoomZoom(100);
+    setScale(30);
+    setFrame("black");
+    setPosition({ x: 50, y: 40 });
+    setDrag(null);
+    setError("");
+  };
+
   return (
     <main>
       <SiteHeader />
@@ -243,7 +258,7 @@ export default function Mockup() {
         </aside>
 
         <div className="mockup-preview">
-          <div className="mockup-toolbar"><span>Live preview · {selected?.width} × {selected?.height} cm</span><button onClick={() => { setPosition({ x: 50, y: 40 }); setScale(30); }}><RotateCcw /> Reset</button></div>
+          <div className="mockup-toolbar"><span>Live preview · {selected?.width} × {selected?.height} cm</span><button type="button" onClick={resetMockup}><RotateCcw /> Reset</button></div>
           <div className="room-stage" ref={stageRef}>
             <img className={`room-photo ${roomFit}`} src={room} alt="Room preview" style={{ transform: `scale(${roomZoom / 100})` }} />
             {selected && <div ref={placedArtRef} className={`placed-art ${frame}`} style={{ left: `${position.x}%`, top: `${position.y}%`, width: `${scale}%`, aspectRatio: `${selected.width}/${selected.height}` }} onPointerDown={(event) => { event.currentTarget.setPointerCapture(event.pointerId); setDrag({ x: event.clientX, y: event.clientY }); }} onPointerMove={moveArtwork} onPointerUp={() => setDrag(null)}><img src={selected.image} alt={selected.title} /><i><Move /> drag to position</i></div>}
