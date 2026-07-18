@@ -2,6 +2,8 @@
 
 A vivid, editorial art storefront with a browser-based room preview and lightweight catalogue admin.
 
+The interface defaults to Brazilian Portuguese and can be switched to English or Spanish. The preference is remembered in the browser.
+
 ## Run locally
 
 ```bash
